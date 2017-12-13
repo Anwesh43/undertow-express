@@ -1,7 +1,4 @@
-import io.undertow.Undertow;
-import io.undertow.server.HttpHandler;
-import io.undertow.server.HttpServerExchange;
-import io.undertow.util.Headers;
+import java.util.Map;
 
 public class UndertowDemo {
     public static void main(String args[]) {
@@ -17,13 +14,19 @@ public class UndertowDemo {
                     response.send(String.format("hello %s %s",request.getParams().get("name"),request.getParams().get("age")));
                 }
             });
-            Undertow server = Undertow.builder().addHttpListener(8000,"localhost").setHandler(new HttpHandler(){
-                public void handleRequest(HttpServerExchange exchange) throws Exception {
-                    router.route(exchange);
+            router.get("/relationbetween/:person1/:person2/:relation", new HandlerCallback() {
+                public void callback(UndertowRequest request, UndertowResponse response) {
+                    Map<String,String> params = request.getParams();
+                    response.send(String.format("%s and %s are %s",params.get("person1"),params.get("person2"),params.get("relation")));
                 }
-            }).build();
-            server.start();
-            System.out.println("started server");
+            });
+            UndertowExpress express =  UndertowExpress.newInstance();
+            express.use(router);
+            express.listen(8000, new UndertowCallback() {
+                public void callback() {
+                    System.out.println("started server");
+                }
+            });
         }
         catch(Exception ex) {
 

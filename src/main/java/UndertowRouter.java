@@ -12,7 +12,7 @@ public class UndertowRouter implements Router{
     public void get(String path,HandlerCallback callback) {
         getRequests.put(path,callback);
     }
-    public void route(HttpServerExchange exchange) {
+    private void route(HttpServerExchange exchange) {
         HttpString method = exchange.getRequestMethod();
         if(method.equals(Methods.POST)) {
             processPostCall(exchange);
@@ -71,5 +71,8 @@ public class UndertowRouter implements Router{
     }
     private void processGetCall(HttpServerExchange exchange) {
         processAndExecuteCall(exchange,getRequests);
+    }
+    public void callback(HttpServerExchange exchange) {
+        route(exchange);
     }
 }
